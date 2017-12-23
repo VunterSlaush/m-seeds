@@ -1,26 +1,22 @@
 const faker = require("faker");
 
 class Seeder {
-  constructor() {
-    this.models = null;
-  }
-
   async seed(model, count) {
-    console.log("Seeding:", model.collection.collectionName);
+    if (!model.collection) return;
+
     try {
+      console.log("Seeding:", model.collection.collectionName);
       let doc;
       for (var i = 0; i < count; i++) {
         doc = await this.makeFakeDoc(model);
         try {
           await new model(doc).save();
-        } catch (e) {
-          //console.log("Error Making Model", e);
-        }
+        } catch (e) {}
       }
+      console.log("Finished to Seed:", model.collection.collectionName);
     } catch (e) {
       console.log("ERROR SEEDING", e);
     }
-    console.log("Finished to Seed:", model.collection.collectionName);
   }
 
   async makeFakeDoc(model) {
@@ -64,13 +60,13 @@ class Seeder {
   }
 
   async makeFakeRef(ref) {
-    if (this.models)
+    if (!this.models)
       throw new Error(
-        "please set the models with 'mseed.models = models' to make ref fill function work"
+        "please set the models with 'mseed.setModels(models)' to make ref fill function work"
       );
-    let count = await models[ref].count();
+    let count = await this.models[ref].count();
     let random = Math.floor(Math.random() * count);
-    let doc = await models[ref].findOne().skip(random);
+    let doc = await this.models[ref].findOne().skip(random);
     return doc ? doc.id : null;
   }
 
@@ -85,12 +81,16 @@ class Seeder {
   }
 
   async seedAll(count) {
-    if (this.models)
-      throw new Error("please set the models with 'mseed.models = models'");
+    if (!this.models)
+      throw new Error("please set the models with 'mseed.setModels(models)'");
 
-    for (k in models) {
-      await this.seed(models[k], count);
+    for (let k in this.models) {
+      await this.seed(this.models[k], count);
     }
+  }
+
+  setModels(allModels) {
+    this.models = allModels;
   }
 }
 
