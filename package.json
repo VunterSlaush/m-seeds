@@ -1,0 +1,33 @@
+{
+  "name": "m-seeds",
+  "version": "1.0.0",
+  "description": "a mongoose seeding module",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "example": "node runExample.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VunterSlaush/m-seeds.git"
+  },
+  "keywords": [
+    "nodejs",
+    "mongodb",
+    "mongoose",
+    "seed",
+    "fill",
+    "database",
+    "faker"
+  ],
+  "author": "Jesus Mota <j3sus1506@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/VunterSlaush/m-seeds/issues"
+  },
+  "homepage": "https://github.com/VunterSlaush/m-seeds#readme",
+  "dependencies": {
+    "faker": "^4.1.0",
+    "mongoose": "^4.13.7"
+  }
+}
