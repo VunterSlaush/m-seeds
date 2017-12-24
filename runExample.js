@@ -6,5 +6,5 @@ async function run() {
   console.log("this is a example model filled:", filledObject);
 }
 
-mseeds.models = models;
+mseeds.setModels(models);
 run();
