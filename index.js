@@ -67,7 +67,14 @@ class Seeder {
     let count = await this.models[ref].count();
     let random = Math.floor(Math.random() * count);
     let doc = await this.models[ref].findOne().skip(random);
+    if (!doc) doc = await this.createAndSaveFakeDoc(this.models[ref]);
     return doc ? doc.id : null;
+  }
+
+  async createAndSaveFakeDoc(model) {
+    let doc = await this.makeFakeDoc(model);
+    let docSaved = await new model(doc).save();
+    return docSaved;
   }
 
   async makeFakeArray(path) {
