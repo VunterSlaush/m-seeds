@@ -31,12 +31,16 @@ class Seeder {
 
   async fakePathParam(path) {
     if (!path) return null;
+
+    path.options = path.options || {};
+    var prop = path.options.fake;
+
+    if (prop == "optional" && Math.floor(Math.random() * 2) == 1) return null;
+
     if (path.instance == "Array") return this.makeFakeArray(path);
     if (path.schema) return this.makeFakeDoc(path);
     if (path.options.ref) return await this.makeFakeRef(path.options.ref);
 
-    path.options = path.options || {};
-    var prop = path.options.fake;
     if (prop) {
       if (typeof prop === "function") return prop;
       return this.fakerProp(faker, prop);
