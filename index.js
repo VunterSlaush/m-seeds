@@ -34,8 +34,10 @@ class Seeder {
 
     path.options = path.options || {};
     var prop = path.options.fake;
-
-    if (prop == "optional" && Math.floor(Math.random() * 2) == 1) return null;
+    if (prop && prop.includes("optional")) {
+      let how = Number(prop.replace("optional:", "").replace("%", ""));
+      if (Math.floor(Math.random() * 100) > how) return null;
+    }
 
     if (path.instance == "Array") return this.makeFakeArray(path);
     if (path.schema) return this.makeFakeDoc(path);
