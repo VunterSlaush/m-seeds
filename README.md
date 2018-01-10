@@ -35,7 +35,7 @@ var UserSchema = new Schema({
     type: String,
     fake: "internet.userName" // calls faker.internet.userName()
   },
-  someOptionalParam: { type:String, fake:"optional" }, // if you want some optional param, that sometimes get filled and sometimes not
+  someOptionalParam: { type:String, fake:"optional:70%" }, // if you want some optional param, that 70% of times get filled and sometimes not
   someArrayOfStrings: [{ type: String, fake: "random.word" }], // this fills an array with random words
   someSubDoc: SubDoc // this sub document is filled too, with its fake options
   refToAnotherModel: { type: Schema.Types.ObjectId, ref: "AnotherModel" } // if you fill m-seeds with a list of models (mSeeds.setModels())
