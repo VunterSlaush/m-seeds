@@ -3,15 +3,24 @@ const faker = require("faker");
 class Seeder {
   async seed(model, count) {
     if (!model.collection) return;
-
+    let triesCount = 0;
     try {
       console.log("Seeding:", model.collection.collectionName);
       let doc;
       for (var i = 0; i < count; i++) {
-        doc = await this.makeFakeDoc(model);
         try {
+          doc = await this.makeFakeDoc(model);
           await new model(doc).save();
-        } catch (e) {}
+        } catch (e) {
+          i--;
+          triesCount++;
+          if (triesCount == 100) {
+            console.log(
+              "ERROR THIS MODEL HAVE SOME VALIDATIONS THAT CANNOT LET CREATE A FAKE DOC!"
+            );
+            break;
+          }
+        }
       }
       console.log("Finished to Seed:", model.collection.collectionName);
     } catch (e) {
@@ -20,7 +29,10 @@ class Seeder {
   }
 
   async makeFakeDoc(model) {
-    var paths = Object.keys(model.schema.paths);
+    let paths;
+    if (model.schema) paths = Object.keys(model.schema.paths);
+    else paths = Object.keys(model.paths);
+
     var doc = {};
     for (var i = 0; i < paths.length; i++) {
       var value = await this.fakePathParamByModel(model, paths[i]);
@@ -52,7 +64,9 @@ class Seeder {
   }
 
   async fakePathParamByModel(model, pathName) {
-    var path = model.schema.paths[pathName];
+    var path;
+    if (model.schema) path = model.schema.paths[pathName];
+    else path = model.paths[pathName];
     return this.fakePathParam(path);
   }
 
