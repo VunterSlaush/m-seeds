@@ -4,39 +4,74 @@ class Seeder {
   async seed(model, count) {
     if (!model.collection) return;
     let triesCount = 0;
-    try {
-      console.log("Seeding:", model.collection.collectionName);
-      let doc;
-      for (var i = 0; i < count; i++) {
-        try {
-          doc = await this.makeFakeDoc(model);
-          await new model(doc).save();
-        } catch (e) {
-          i--;
-          triesCount++;
-          if (triesCount == 100) {
-            console.log(
-              "ERROR THIS MODEL HAVE SOME VALIDATIONS THAT CANNOT LET CREATE A FAKE DOC!"
-            );
-            break;
-          }
+
+    console.log("Seeding:", model.collection.collectionName);
+    let doc;
+    for (var i = 0; i < count; i++) {
+      try {
+        doc = await this.makeFakeDoc(model);
+        await new model(doc).save();
+      } catch (e) {
+        i--;
+        triesCount++;
+        if (triesCount == 1000) {
+          console.log(
+            "ERROR THIS MODEL HAVE SOME VALIDATIONS THAT CANNOT LET CREATE A FAKE DOC!"
+          );
+          console.log("Models Generated:", i);
+          console.log("Error Getted", e);
+          break;
         }
       }
-      console.log("Finished to Seed:", model.collection.collectionName);
-    } catch (e) {
-      console.log("ERROR SEEDING", e);
     }
+    console.log("Finished to Seed:", model.collection.collectionName);
   }
 
-  async makeFakeDoc(model) {
+  async seedWithDefaults(model, count, defaults) {
+    if (!model.collection) return;
+    let triesCount = 0;
+
+    console.log("Seeding:", model.collection.collectionName);
+    let doc;
+    for (var i = 0; i < count; i++) {
+      try {
+        doc = await this.makeFakeDoc(model, defaults);
+        await new model(doc).save();
+      } catch (e) {
+        i--;
+        triesCount++;
+        if (triesCount == 1000) {
+          console.log(
+            "ERROR THIS MODEL HAVE SOME VALIDATIONS THAT CANNOT LET CREATE A FAKE DOC!"
+          );
+          console.log("Models Generated:", i);
+          console.log("Error Getted", e);
+          break;
+        }
+      }
+    }
+    console.log("Finished to Seed:", model.collection.collectionName);
+  }
+
+  async makeFakeDoc(model, defaults) {
     let paths;
     if (model.schema) paths = Object.keys(model.schema.paths);
     else paths = Object.keys(model.paths);
 
     var doc = {};
+
+    if (!defaults) defaults = {};
+
     for (var i = 0; i < paths.length; i++) {
-      var value = await this.fakePathParamByModel(model, paths[i]);
-      if (value) doc[paths[i]] = typeof value == "function" ? value() : value;
+      if (
+        defaults.hasOwnProperty(paths[i]) ||
+        defaults.hasOwnProperty(paths[i].path)
+      ) {
+        doc[paths[i]] = defaults[paths[i]];
+      } else {
+        var value = await this.fakePathParamByModel(model, paths[i]);
+        if (value) doc[paths[i]] = typeof value == "function" ? value() : value;
+      }
     }
     return doc;
   }

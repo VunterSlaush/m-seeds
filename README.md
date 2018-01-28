@@ -50,8 +50,7 @@ module.exports = mongoose.model("User", UserSchema);
 
 ## Run the Seeding
 
-To run the seeding you can make a file just importing the module (`const mSeeds
-= require("m-seeds")`), the models, and stablish the database connection and
+To run the seeding you can make a file just importing the module (`const mSeeds = require("m-seeds")`), the models, and stablish the database connection and
 then just simply call `mSeeds.seed(someModel,count)` or `mSeeds.seedAll(count)`,
 where `count` is the number of documents we want to make on our collections.
 
@@ -70,12 +69,34 @@ mSeeds.seed(models["User"], 5); // this will fill the User collection with 5 doc
 mSeeds.seedAll(5); // this will fill all the models collections passed on setModels, with 5 documents with fake data.
 ```
 
+## Seed with some Default Values
+
+If you want to seed but you want to fill some properties with default values, you
+can use `mSeeds.seedWithDefaults(someModel,count, defaults)`, where `defaults` is an object
+like key and value, to indicate the value for the right property, as you can see in this example
+
+```js
+const mSeeds = require("m-seeds");
+const models = require("./models");
+
+doDatabaseConnection();
+
+// this will fill the User collection with 5 documents, with firstName and lastName the same
+// as indicate the 3th param
+mSeeds.seedWithDefaults(models["User"], 5, {
+  firstName: "Jesus",
+  lastName: "Mota"
+});
+```
+
 ## Generate fake docs not for seeding purposes
 
 To generate a fake docs instances of a model you just need to call
 
 ```js
 mSeeds.makeFakeDoc(model);
+// or if you want to generate it with with default Values
+mSeeds.makeFakeDoc(model, defaults);
 ```
 
 ## Test it
