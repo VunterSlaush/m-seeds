@@ -85,7 +85,7 @@ class Seeder {
       let how = Number(prop.replace("optional:", "").replace("%", ""));
       if (Math.floor(Math.random() * 100) > how) return null;
     }
-
+    if (path.options.enum) return this.randomValueFrom(path.options.enum);
     if (path.instance == "Array") return this.makeFakeArray(path);
     if (path.schema) return this.makeFakeDoc(path);
     if (path.options.ref) return await this.makeFakeRef(path.options.ref);
@@ -114,6 +114,11 @@ class Seeder {
     return obj;
   }
 
+  randomValueFrom(arry) {
+    let random = Math.floor(Math.random() * arry.length);
+    return arry[random];
+  }
+
   async makeFakeRef(ref) {
     if (!this.models)
       throw new Error(
@@ -133,7 +138,7 @@ class Seeder {
   }
 
   async makeFakeArray(path) {
-    let random = Math.floor(Math.random() * 5);
+    let random = Math.floor(Math.random() * 7);
     let arry = [];
     for (var i = 0; i < random; i++) {
       let doc = await this.fakePathParam(path.caster);
