@@ -44,9 +44,11 @@ class Seeder {
       ) {
         doc[paths[i]] = defaults[paths[i]];
       } else {
-        if (doc[paths[i]]) continue;
-        var value = await this.fakePathParamByModel(model, paths[i], doc);
-        if (value) doc[paths[i]] = typeof value == "function" ? value() : value;
+        if (!doc[paths[i]]) {
+          var value = await this.fakePathParamByModel(model, paths[i], doc);
+          if (value)
+            doc[paths[i]] = typeof value == "function" ? value() : value;
+        }
       }
     }
     return doc;
@@ -86,13 +88,12 @@ class Seeder {
         "the kind field for dynamic reference must have an enum with posibles Models"
       );
 
-    const ref = this.randomValueFrom(paths[path.options.refPath].options.enum);
-    seededDoc[path.options.refPath] = ref;
-    let count = await this.models[ref].count();
-    let random = Math.floor(Math.random() * count);
-    let doc = await this.models[ref].findOne().skip(random);
-    if (!doc) doc = await this.createAndSaveFakeDoc(this.models[ref]);
-    return doc ? doc.id : null;
+    if (!seededDoc[path.options.refPath]) {
+      let ref = this.randomValueFrom(paths[path.options.refPath].options.enum);
+      seededDoc[path.options.refPath] = ref;
+    }
+
+    return await this.makeFakeRef(seededDoc[path.options.refPath]);
   }
 
   async fakePathParamByModel(model, pathName, doc) {
