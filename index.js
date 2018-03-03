@@ -97,10 +97,18 @@ class Seeder {
   }
 
   async fakePathParamByModel(model, pathName, doc) {
-    var path;
-    if (model.schema) path = model.schema.paths[pathName];
-    else path = model.paths[pathName];
-    return this.fakePathParam(path, model.schema.paths, doc);
+    try {
+      var path;
+      if (model.schema) path = model.schema.paths[pathName];
+      else path = model.paths[pathName];
+      return this.fakePathParam(
+        path,
+        model.schema ? model.schema.paths : model.paths,
+        doc
+      );
+    } catch (e) {
+      //console.log("E", e, model);
+    }
   }
 
   fakerProp(obj, prop) {
