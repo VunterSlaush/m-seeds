@@ -30,10 +30,21 @@ class Seeder {
 
   async makeFakeDoc(model, defaults) {
     let paths;
+
     if (model.schema) paths = Object.keys(model.schema.paths);
     else paths = Object.keys(model.paths);
 
-    var doc = {};
+    const fakeCreatedAt =
+      model.schema && model.schema.options
+        ? model.schema.options.fakeCreatedAt
+        : null;
+
+    const createdAtFieldName =
+      model.schema && model.schema.options && model.schema.options.timestamps
+        ? model.schema.options.timestamps.createdAt
+        : null;
+
+    const doc = {};
 
     if (!defaults) defaults = {};
 
@@ -51,6 +62,8 @@ class Seeder {
         }
       }
     }
+    if (fakeCreatedAt)
+      doc[createdAtFieldName] = this.generateRandomCreatedAt(fakeCreatedAt);
     return doc;
   }
 
@@ -123,6 +136,19 @@ class Seeder {
   randomValueFrom(arry) {
     let random = Math.floor(Math.random() * arry.length);
     return arry[random];
+  }
+
+  generateRandomCreatedAt(createAtOptions) {
+    return this.randomDate(
+      new Date(createAtOptions.from),
+      new Date(createAtOptions.to)
+    );
+  }
+
+  randomDate(start, end) {
+    return new Date(
+      start.getTime() + Math.random() * (end.getTime() - start.getTime())
+    );
   }
 
   async makeFakeRef(ref) {
