@@ -72,11 +72,12 @@ class Seeder {
 
     path.options = path.options || {};
     var prop = path.options.fake;
+
     if (prop && prop.includes("optional")) {
       let how = Number(prop.replace("optional:", "").replace("%", ""));
       if (Math.floor(Math.random() * 100) > how) return null;
     }
-
+    if (prop && prop.indexOf(",") !== -1) return this.arrayOfFakerProps(prop);
     if (path.options.enum) return this.randomValueFrom(path.options.enum);
     if (path.instance == "Array") return this.makeFakeArray(path);
     if (path.schema) return this.makeFakeDoc(path);
@@ -89,6 +90,14 @@ class Seeder {
     }
 
     return null;
+  }
+
+  arrayOfFakerProps(props) {
+    const fakeParams = [];
+    props.split(",").map(prop => {
+      fakeParams.push(this.fakerProp(faker, prop.trim()));
+    });
+    return fakeParams.map(value => value());
   }
 
   async makeMultiRef(path, paths, seededDoc) {

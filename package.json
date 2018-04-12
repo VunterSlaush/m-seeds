@@ -28,6 +28,6 @@
   "homepage": "https://github.com/VunterSlaush/m-seeds#readme",
   "dependencies": {
     "faker": "^4.1.0",
-    "mongoose": "^4.13.7"
+    "mongoose": "^4.13.12"
   }
 }
