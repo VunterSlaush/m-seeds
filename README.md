@@ -50,15 +50,28 @@ module.exports = mongoose.model("User", UserSchema);
 
 ## Run the Seeding
 
-To run the seeding you can make a file just importing the module (`const mSeeds = require("m-seeds")`), the models, and stablish the database connection and
+To run the seeding you can make a file just importing the module (`const mSeeds = require("m-seeds").getSeeder({})`), the models, and stablish the database connection and
 then just simply call `mSeeds.seed(someModel,count)` or `mSeeds.seedAll(count)`,
 where `count` is the number of documents we want to make on our collections.
 
 **Note:** To call `mSeeds.seedAll(count)` you need to call before
 `mSeeds.setModels(models)`, where `models` is a list of all models.
 
+You can take control of certain options when getting the seeder, the `getSeeder` takes an options argument:
+
+`getSeeder(options)`
+
+* `options: `
+
+| name | default | description |
+| ---- | ------- | ----------- |
+| silentLogging | `false` | if should hide all debug logs, either `boolean` or a `string` containing `NODE_ENV` env variable on which hide the logs.
+
+
+
+
 ```js
-const mSeeds = require("m-seeds");
+const mSeeds = require("m-seeds").getSeeder({});
 const models = require("./models");
 
 doDatabaseConnection();
@@ -76,7 +89,7 @@ can use `mSeeds.seedWithDefaults(someModel,count, defaults)`, where `defaults` i
 like key and value, to indicate the value for the right property, as you can see in this example
 
 ```js
-const mSeeds = require("m-seeds");
+const mSeeds = require("m-seeds").getSeeder();
 const models = require("./models");
 
 doDatabaseConnection();

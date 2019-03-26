@@ -1,5 +1,5 @@
 const models = require("./examples");
-const mseeds = require("./");
+const mseeds = require("./").getSeeder();
 
 async function run() {
   let filledObject = await mseeds.makeFakeDoc(models["SimpleSchema"]);
