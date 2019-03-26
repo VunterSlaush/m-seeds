@@ -1,6 +1,26 @@
 const faker = require("faker");
 
 class Seeder {
+  constructor(options) {
+    this.defaults = {
+      silentLogging:  false, //if string passed, will do look up in NODE_ENV  variable
+    }
+
+    this.options = Object.assign({}, this.defaults, options);
+    this.options.silentLogging = (() => {
+      const { silentLogging } = this.options;
+      if (typeof silentLogging === "string") {
+        return process.env["NODE_ENV"] === silentLogging;
+      }
+
+      return silentLogging;
+    })();
+  }
+  
+  debug(...params) {
+    if (this.options.silentLogging) return;
+    console.log(...params);
+  }
   async seed(model, count) {
     await this.seedWithDefaults(model, count, {});
   }
@@ -9,7 +29,7 @@ class Seeder {
     if (!model.collection) return;
     let triesCount = 0;
 
-    console.log("Seeding:", model.collection.collectionName);
+    this.debug("Seeding:", model.collection.collectionName);
     let doc;
     for (var i = 0; i < count; i++) {
       try {
@@ -19,13 +39,13 @@ class Seeder {
         i--;
         triesCount++;
         if (triesCount == 1000) {
-          console.log("Models Generated:", i);
-          console.log("Error Getted", e);
+          this.debug("Models Generated:", i);
+          this.debug("Error Getted", e);
           break;
         }
       }
     }
-    console.log("Finished to Seed:", model.collection.collectionName);
+    this.debug("Finished to Seed:", model.collection.collectionName);
   }
 
   async makeFakeDoc(model, defaults) {
@@ -129,7 +149,7 @@ class Seeder {
         doc
       );
     } catch (e) {
-      //console.log("E", e, model);
+      //this.debug("E", e, model);
     }
   }
 
@@ -202,4 +222,6 @@ class Seeder {
   }
 }
 
-module.exports = new Seeder();
+module.exports = {
+  getSeeder: options => new Seeder(options)
+};
